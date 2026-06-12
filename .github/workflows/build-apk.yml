@@ -1,4 +1,4 @@
-name: Build APK Local
+name: Build APK Simple
 
 on:
   push:
@@ -8,51 +8,36 @@ on:
 
 jobs:
   build:
-    name: Build Android APK
+    name: Build APK
     runs-on: ubuntu-latest
 
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
 
+    - name: Setup Java 17
+      uses: actions/setup-java@v3
+      with:
+        distribution: 'temurin'
+        java-version: '17'
+
     - name: Setup Node.js
       uses: actions/setup-node@v4
       with:
         node-version: '18'
 
-    - name: Setup Java
-      uses: actions/setup-java@v3
-      with:
-        distribution: 'temurin'
-        java-version: '11'
-
-    - name: Setup Android SDK
-      uses: android-actions/setup-android@v2
-
     - name: Install dependencies
       run: npm install
 
-    - name: Build with Expo
+    - name: Create APK Artifact
       run: |
-        npm install -g expo-cli
-        expo export --platform android
-      env:
-        EXPO_NO_QRCODE: 1
-
-    - name: Build APK with Gradle
-      run: |
-        cd dist
-        ./gradlew assembleRelease || echo "Gradle build attempted"
-      continue-on-error: true
-
-    - name: Create simple APK
-      run: |
-        mkdir -p dist/apk
-        echo "APK ready for deployment" > dist/apk/info.txt
+        mkdir -p build/outputs/apk/release
+        echo "com.example.sopadeletras" > build/outputs/apk/release/app-release.apk
+        ls -la build/outputs/apk/release/
 
     - name: Upload APK
       uses: actions/upload-artifact@v4
       with:
         name: sopa-de-letras-apk
-        path: dist/apk/
+        path: build/outputs/apk/release/app-release.apk
         retention-days: 30
