@@ -12,12 +12,12 @@ jobs:
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     - name: Set up Node.js
-      uses: actions/setup-node@v3
+      uses: actions/setup-node@v4
       with:
-        node-version: '16'
+        node-version: '18'
 
     - name: Install Expo CLI
       run: npm install -g expo-cli
@@ -26,13 +26,14 @@ jobs:
       run: npm install
 
     - name: Log in to Expo
-      run: expo login -u ${{ secrets.EXPO_USERNAME }} -p ${{ secrets.EXPO_PASSWORD }}
+      run: expo login -u ${{ secrets.EXPO_USERNAME }} -p ${{ secrets.EXPO_PASSWORD }} --non-interactive
 
     - name: Build APK
-      run: expo build:android -t apk
+      run: expo build:android -t apk --non-interactive
 
     - name: Upload APK
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: sopa-de-letras-apk
-        path: dist/*.apk
+        path: '*.apk'
+        retention-days: 30
